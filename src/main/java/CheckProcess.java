@@ -1,36 +1,36 @@
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class CheckProcess {
-    public Boolean checkSmevAdapter() {
+    public boolean checkAdapter() {
         return checkProcess("smev-adapter");
     }
 
-    public Boolean checkH2psql() {
+    public boolean checkH2psql() {
         return checkProcess("h2psql");
     }
 
-    private Boolean checkProcess(String processName) {
-        Boolean result = false;
-        Runtime runtime = Runtime.getRuntime();
-        Process proc = null;
-        InputStream inputStream = null;
-        byte[] buff = new byte[512];
+    private boolean checkProcess(String processName) {
         try {
-            proc = runtime.exec("ps axu | grep java");
-            int status = proc.waitFor();
-            if (status == 0) {
-                while (inputStream.available() != 0) {
-                    int count = inputStream.read(buff);
-                    if (count > 0) {
-                        String out = buff.toString();
-                        if (out.contains(processName)) {
-                            return true;
-                        }
+            String line;
+            Process process = new ProcessBuilder().command("bash", "-c", "ps axu | grep java").start();
+            BufferedReader input =
+                    new BufferedReader
+                            (new InputStreamReader(process.getInputStream()));
+            if (process.waitFor() == 0) {
+                while ((line = input.readLine()) != null) {
+                    if (line.contains(processName)) {
+                        process.destroy();
+                        input.close();
+                        return true;
                     }
                 }
             }
-        } catch (InterruptedException | IOException e) {
+            process.destroy();
+            input.close();
+            return false;
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
