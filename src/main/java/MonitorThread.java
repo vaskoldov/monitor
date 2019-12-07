@@ -14,6 +14,7 @@ public class MonitorThread extends Thread {
     private String signFNSAlias;
     private String signEGRNAlias;
     private String signISAlias;
+    private String smevURL;
 
     public MonitorThread(Properties props) {
         // Параметры процесса мониторинга
@@ -24,12 +25,14 @@ public class MonitorThread extends Thread {
         signFNSAlias = props.getProperty("FNS_SIGN_ALIAS");
         signEGRNAlias = props.getProperty("EGRN_SIGN_ALIAS");
         signISAlias = props.getProperty("IS_SIGN_ALIAS");
+        smevURL = props.getProperty("TRANSPORT_URL");
     }
     public void run() {
         CheckProcess checkProcess = new CheckProcess();
         CheckFreeSpace checkFreeSpace = new CheckFreeSpace();
         CheckExpired checkExpired = new CheckExpired();
         CheckKeyContainers checkKeyContainers = new CheckKeyContainers();
+        CheckSMEVService checkSMEVService = new CheckSMEVService();
         while (isRunnable) {
             File statusFile = new File(statusFileName);
             FileWriter fw = null;
@@ -73,7 +76,9 @@ public class MonitorThread extends Thread {
                 fw.write("ValidTillEGRNSign=");
                 fw.write(checkKeyContainers.signValidTill(signEGRNAlias));
                 fw.write("\n");
-                fw.write("SMEVConnectionStatus=true");
+                fw.write("SMEVConnectionStatus=");
+                String smevStatus = checkSMEVService.checkTransport(smevURL) ? "true" : "false";
+                fw.write(smevStatus);
                 fw.write("\n");
                 fw.write("FreeSpaceStatus=");
                 String usedSpace = Integer.toString(checkFreeSpace.checkFreeSpace());
