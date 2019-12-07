@@ -4,16 +4,32 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Properties;
 
 public class MonitorThread extends Thread {
-    public static final String statusFileName = "/opt/adapter/SystemStatus.log";
-    public static final Boolean isRunnable = true;
-    public static final Long interval = 300000L;
+    private String statusFileName;
+    private boolean isRunnable;
+    private Long interval;
 
+    private String signFNSAlias;
+    private String signEGRNAlias;
+    private String signISAlias;
+
+    public MonitorThread(Properties props) {
+        // Параметры процесса мониторинга
+        statusFileName = props.getProperty("LOG_FILE");
+        isRunnable = true;
+        interval = Long.parseLong(props.getProperty("INTERVAl"));
+        // Параметры проверяемых подписей
+        signFNSAlias = props.getProperty("FNS_SIGN_ALIAS");
+        signEGRNAlias = props.getProperty("EGRN_SIGN_ALIAS");
+        signISAlias = props.getProperty("IS_SIGN_ALIAS");
+    }
     public void run() {
         CheckProcess checkProcess = new CheckProcess();
         CheckFreeSpace checkFreeSpace = new CheckFreeSpace();
         CheckExpired checkExpired = new CheckExpired();
+        CheckKeyContainers checkKeyContainers = new CheckKeyContainers();
         while (isRunnable) {
             File statusFile = new File(statusFileName);
             FileWriter fw = null;
@@ -36,17 +52,26 @@ public class MonitorThread extends Thread {
                 String SMEVAdapterStatus = checkProcess.checkAdapter() ? "true" : "false";
                 fw.write(SMEVAdapterStatus);
                 fw.write("\n");
-                fw.write("IsPresentSystemSign=true");
+                fw.write("IsPresentSystemSign=");
+                String systemSignStatus = checkKeyContainers.isSignAvailable(signISAlias) ? "true" : "false";
+                fw.write(systemSignStatus);
                 fw.write("\n");
-                fw.write("ValidTillSystemSign=09/01/2020");
+                fw.write("ValidTillSystemSign=");
+                fw.write(checkKeyContainers.signValidTill(signISAlias));
                 fw.write("\n");
-                fw.write("IsPresentUserSign=true");
+                fw.write("IsPresentUserSign=");
+                String fnsSignStatus = checkKeyContainers.isSignAvailable(signFNSAlias) ? "true" : "false";
+                fw.write(fnsSignStatus);
                 fw.write("\n");
-                fw.write("ValidTillUserSign=07/03/2020");
+                fw.write("ValidTillUserSign=");
+                fw.write(checkKeyContainers.signValidTill(signFNSAlias));
                 fw.write("\n");
-                fw.write("IsPresentEGRNSign=true");
+                fw.write("IsPresentEGRNSign=");
+                String egrnSignStatus = checkKeyContainers.isSignAvailable(signEGRNAlias) ? "true" : "false";
+                fw.write(egrnSignStatus);
                 fw.write("\n");
-                fw.write("ValidTillEGRNSign=26/06/2020");
+                fw.write("ValidTillEGRNSign=");
+                fw.write(checkKeyContainers.signValidTill(signEGRNAlias));
                 fw.write("\n");
                 fw.write("SMEVConnectionStatus=true");
                 fw.write("\n");
