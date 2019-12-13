@@ -5,11 +5,11 @@ public class CheckExpired {
     private Connection connection = null;
     private PreparedStatement earliestSent = null;
 
-    public CheckExpired() {
+    public CheckExpired(String mnemonic) {
         try {
             Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(pgURL, "smev", "smev");
-            String sql = "SELECT MIN(send_timestamp) FROM \"FSOR01_3T\".log WHERE status = 'SENT';";
+            String sql = String.format("SELECT MIN(send_timestamp) FROM \"%s\".log WHERE status = 'SENT';", mnemonic);
             earliestSent = connection.prepareStatement(sql);
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();

@@ -11,6 +11,7 @@ public class MonitorThread extends Thread {
     private boolean isRunnable;
     private Long interval;
 
+    private String mnemonic;
     private String signFNSAlias;
     private String signEGRNAlias;
     private String signISAlias;
@@ -18,6 +19,7 @@ public class MonitorThread extends Thread {
 
     public MonitorThread(Properties props) {
         // Параметры процесса мониторинга
+        mnemonic = props.getProperty("MNEMONIC");
         statusFileName = props.getProperty("LOG_FILE");
         isRunnable = true;
         interval = Long.parseLong(props.getProperty("INTERVAl"));
@@ -30,7 +32,7 @@ public class MonitorThread extends Thread {
     public void run() {
         CheckProcess checkProcess = new CheckProcess();
         CheckFreeSpace checkFreeSpace = new CheckFreeSpace();
-        CheckExpired checkExpired = new CheckExpired();
+        CheckExpired checkExpired = new CheckExpired(mnemonic);
         CheckKeyContainers checkKeyContainers = new CheckKeyContainers();
         CheckSMEVService checkSMEVService = new CheckSMEVService();
         while (isRunnable) {
