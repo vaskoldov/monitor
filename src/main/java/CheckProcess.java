@@ -4,11 +4,11 @@ import java.io.InputStreamReader;
 
 public class CheckProcess {
     public boolean checkAdapter() {
-        return checkProcess("smev-adapter");
+        return checkProcess("bpm-service");
     }
 
     public boolean checkH2psql() {
-        return checkProcess("h2psql");
+        return checkProcess("converter");
     }
 
     private boolean checkProcess(String processName) {
