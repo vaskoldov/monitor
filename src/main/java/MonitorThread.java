@@ -16,6 +16,7 @@ public class MonitorThread extends Thread {
     private String signEGRNAlias;
     private String signISAlias;
     private String smevURL;
+    private String diskPartition;
 
     public MonitorThread(Properties props) {
         // Параметры процесса мониторинга
@@ -23,6 +24,7 @@ public class MonitorThread extends Thread {
         statusFileName = props.getProperty("LOG_FILE");
         isRunnable = true;
         interval = Long.parseLong(props.getProperty("INTERVAl"));
+        diskPartition = props.getProperty("DISK");
         // Параметры проверяемых подписей
         signFNSAlias = props.getProperty("FNS_SIGN_ALIAS");
         signEGRNAlias = props.getProperty("EGRN_SIGN_ALIAS");
@@ -77,7 +79,7 @@ public class MonitorThread extends Thread {
                 results.append(smevStatus);
                 results.append("\n");
                 results.append("FreeSpaceStatus=");
-                String usedSpace = Integer.toString(checkFreeSpace.checkFreeSpace());
+                String usedSpace = Integer.toString(checkFreeSpace.checkFreeSpace(diskPartition));
                 results.append(usedSpace + "%");
                 results.append("\n");
                 results.append("SentRequestGap=");
