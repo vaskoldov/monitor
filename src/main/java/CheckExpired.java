@@ -1,17 +1,21 @@
 import java.sql.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CheckExpired {
-    private static final String pgURL = "jdbc:postgresql://localhost:5432/smev_adapter";
+    private static Logger LOG = LoggerFactory.getLogger(CheckExpired.class.getName());
     private Connection connection = null;
     private PreparedStatement earliestSent = null;
 
-    public CheckExpired(String mnemonic) {
+    public CheckExpired(String dbConnectionString, String mnemonic, String dbUser, String dbPass) {
+        LOG.info("Проверка наличия просроченных ответов");
         try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection(pgURL, "smev", "smev");
+            connection = DriverManager.getConnection(dbConnectionString, dbUser, dbPass);
             String sql = String.format("SELECT MIN(send_timestamp) FROM \"%s\".log WHERE status = 'SENT';", mnemonic);
             earliestSent = connection.prepareStatement(sql);
         } catch (ClassNotFoundException | SQLException e) {
+            LOG.error(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -29,6 +33,7 @@ public class CheckExpired {
                 return (int) (milliseconds / (24 * 60 * 60 * 1000));
             }
         } catch (SQLException e) {
+            LOG.error(e.getMessage());
             e.printStackTrace();
         }
         return 0;

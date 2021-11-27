@@ -1,8 +1,12 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CheckFreeSpace {
+    private static Logger LOG = LoggerFactory.getLogger(CheckFreeSpace.class.getName());
     public int checkFreeSpace(String diskPartition) {
+        LOG.info("Проверка свободного места на диске");
         int fillPercentage = 0;
         try {
             String line;
@@ -25,9 +29,10 @@ public class CheckFreeSpace {
             }
             process.destroy();
             input.close();
+            LOG.info(String.format("Свободное место на диске - %d", fillPercentage));
             return fillPercentage;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage());
             return 0;
         }
     }
