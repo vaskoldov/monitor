@@ -9,13 +9,13 @@ public class CheckSMEVService {
     public boolean checkTransport(String url) {
         try {
             String line;
-            Process process = new ProcessBuilder().command("bash", "-c", String.format("curl -Is %s --connect-timeout 5", url)).start();
+            Process process = new ProcessBuilder().command("bash", "-c", String.format("curl %s --connect-timeout 5", url)).start();
             BufferedReader input =
                     new BufferedReader
                             (new InputStreamReader(process.getInputStream()));
             if (process.waitFor() == 0) {
                 while ((line = input.readLine()) != null) {
-                    if (line.contains("HTTP/1.1 405 Method Not Allowed")) {
+                    if (line.contains("HTTP GET not supported")) {
                         // Если сервис по указанному URL работает, то возвращает такой ответ
                         process.destroy();
                         input.close();
