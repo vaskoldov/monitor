@@ -17,8 +17,10 @@ public class MonitorThread extends Thread {
     private String signISAlias;
     private String smevURL;
     private String diskPartition;
+    private Properties props;
 
     public MonitorThread(Properties props) {
+        this.props = props;
         // Параметры процесса мониторинга
         mnemonic = props.getProperty("MNEMONIC");
         statusFileName = props.getProperty("LOG_FILE");
@@ -34,7 +36,7 @@ public class MonitorThread extends Thread {
     public void run() {
         CheckProcess checkProcess = new CheckProcess();
         CheckFreeSpace checkFreeSpace = new CheckFreeSpace();
-        CheckExpired checkExpired = new CheckExpired(mnemonic);
+        CheckExpired checkExpired = new CheckExpired(props);
         CheckKeyContainers checkKeyContainers = new CheckKeyContainers();
         CheckSMEVService checkSMEVService = new CheckSMEVService();
         while (isRunnable) {

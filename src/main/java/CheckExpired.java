@@ -1,14 +1,18 @@
 import java.sql.*;
+import java.util.Properties;
 
 public class CheckExpired {
-    private static final String pgURL = "jdbc:postgresql://localhost:5432/smev_adapter";
     private Connection connection = null;
     private PreparedStatement earliestSent = null;
 
-    public CheckExpired(String mnemonic) {
+    public CheckExpired(Properties props) {
         try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection(pgURL, "smev", "smev");
+            String pgURL = props.getProperty("DATABASE_URL");
+            String pgUser = props.getProperty("DATABASE_USER");
+            String pgPassword = props.getProperty("DATABASE_PASS");
+            String mnemonic = props.getProperty("MNEMONIC");
+            connection = DriverManager.getConnection(pgURL, pgUser, pgPassword);
             String sql = String.format("SELECT MIN(send_timestamp) FROM \"%s\".log WHERE status = 'SENT';", mnemonic);
             earliestSent = connection.prepareStatement(sql);
         } catch (ClassNotFoundException | SQLException e) {

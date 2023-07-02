@@ -6,7 +6,7 @@
 
     <groupId>ru.hemulen</groupId>
     <artifactId>monitor</artifactId>
-    <version>5.1</version>
+    <version>5.3</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -67,13 +67,6 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.6</version>
-        </dependency>
-        <dependency>
-            <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>5.6.0-M1</version>
-                <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

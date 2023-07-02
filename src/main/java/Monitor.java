@@ -6,7 +6,7 @@ public class Monitor {
         // Считываем конфигурационный файл
         Properties props = new Properties();
         try {
-            props.load(new FileInputStream(new File("./config/config.ini")));
+            props.load(new FileInputStream(new File("config/config.ini")));
         } catch (IOException e) {
             e.printStackTrace();
         }
